@@ -62,6 +62,14 @@ in {
     };
   };
 
+  programs.gh = {
+    enable = true;
+    gitCredentialHelper.enable = true;
+    settings = {
+      git_protocol = "https";
+    };
+  };
+
   programs.jujutsu = {
     enable = true;
     settings = {
@@ -72,10 +80,6 @@ in {
   };
 
   programs.jjui = {
-    enable = true;
-  };
-
-  programs.gh = {
     enable = true;
   };
 
