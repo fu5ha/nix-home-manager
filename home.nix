@@ -1,15 +1,12 @@
-{ config, pkgs, username, homeDirectory, ... }: let
-  
+{ config, pkgs, llm-agent-pkgs, username, homeDirectory, ... }:
+let
   customPkgs = import ./pkgs/custom.nix {inherit pkgs username;};
   customPackages = with customPkgs; [
       fedoraHost
   ];
 
-  # The home.packages option allows you to install Nix packages into your
-  # environment.
   nixPackages = with pkgs; [
     nushell
-    eza
     htop
     jq
     just
@@ -19,7 +16,15 @@
     jjui
     starship
     jj-starship
+    zoxide
+    eza
   ];
+
+  llmPackages = with llm-agent-pkgs; [
+    pi
+  ];
+
+  homeManagerConfigDir = pkgs.lib.path.append (/. + homeDirectory) ".config/home-manager";
 
 in {
   # Home Manager needs a bit of information about you and the paths it should
@@ -83,8 +88,58 @@ in {
     enable = true;
   };
 
+  programs.distrobox = {
+    enable = true;
+    containers = {
+      main = {
+        image = "ghcr.io/thrix/nix-toolbox:44";
+        additional_packages = "@development-tools clang llvm hx zoxide fd rg";
+        nvidia = true;
+        pull = false;
+        root = false;
+        replace = true;
+        start_now = true;
+      };
+    };
+
+    settings = {
+      container_image_default = "ghcr.io/thrix/nix-toolbox:44";
+    };
+  };
+
+  programs.nushell = {
+    enable = true;
+    configFile.source = ./nushell/config.nu;
+
+    shellAliases = {
+      hmc = "^($env.config.buffer_editor) ~/.config/home-manager";
+    };
+  };
+
+  programs.starship = {
+    enable = true;
+    enableNushellIntegration = true;
+  };
+
+  programs.eza = {
+    enable = true;
+    enableNushellIntegration = true;
+  };
+
+  programs.zoxide = {
+    enable = true;
+    enableNushellIntegration = true;
+  };
+
+  home.shell = {
+    enableShellIntegration = true;
+    enableNushellIntegration = true;
+  };
+
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
-  # plain files is through 'home.file'.
+  # plain files is through 'home.file'. There are more specific ways for various
+  # programs, and also xdg.configFile & xdg.dataFile. The most specific way
+  # should be preferred, use this if there's not a specific way.
   home.file = {
     # # Building this configuration will create a copy of 'dotfiles/screenrc' in
     # # the Nix store. Activating the configuration will then make '~/.screenrc' a
@@ -96,25 +151,20 @@ in {
     #   org.gradle.console=verbose
     #   org.gradle.daemon.idletimeout=3600000
     # '';
-    ".config/containers/custom/main/main.Containerfile".text = ''
-      FROM ghcr.io/thrix/nix-toolbox:44
-
-      RUN dnf install -y @development-tools clang llvm
-
-      RUN dnf install -y nushell git hx zoxide fd rg
-    '';
-
-    "distrobox.ini".text = ''
-      [main]
-      image=main
-      nvidia=true
-      pull=false
-      root=false
-      replace=true
-      start_now=true
-    '';
-
   };
+
+  xdg = {
+    enable = true;
+    # copy to ~/.config
+    configFile = {
+      # "nushell/config.nu".source = config.nu;
+    };
+    # copy to ~/.local/share
+    dataFile = {
+      
+    };
+  };
+
   hostConfig = {
     enable = true;
 

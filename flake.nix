@@ -13,13 +13,20 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
-    { nixpkgs, home-manager, nix-config, ... }:
+    { nixpkgs, home-manager, nix-config, llm-agents, ... }:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
+        inherit system;
+      };
+      llm-agent-pkgs = import llm-agents.packages {
         inherit system;
       };
     in
@@ -39,6 +46,7 @@
         extraSpecialArgs = {
           username = "gray";
           homeDirectory = "/home/gray";
+          llm-agent-pkgs = llm-agent-pkgs;
         };
       };
     };
