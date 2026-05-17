@@ -92,6 +92,7 @@ in {
       user.name = "Gray Olson";
       user.email = "gray@grayolson.com";
       ui.default-command = ["log"];
+      revsets.log = "@ | ancestors(trunk()..(visible_heads() & mine()), 8) | ancestors(trunk(), 3)";
     };
   };
 

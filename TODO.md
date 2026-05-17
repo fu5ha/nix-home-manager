@@ -1,0 +1,1 @@
+- convert bashrc as much as possible to home-manager
