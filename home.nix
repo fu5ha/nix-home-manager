@@ -18,6 +18,10 @@ let
     jj-starship
     zoxide
     eza
+    fnm
+    radicle-node
+    radicle-tui
+    radicle-desktop
   ];
 
   llmPackages = with llm-agent-pkgs; [
@@ -64,12 +68,16 @@ in {
     settings = {
       user.name = "Gray Olson";
       user.email = "gray@grayolson.com";
+      credential = {
+        "https://github.com".helper = "gh auth git-credential";
+        "https://gist.github.com".helper = "gh auth git-credential";
+      };
     };
   };
 
   programs.gh = {
     enable = true;
-    gitCredentialHelper.enable = true;
+    gitCredentialHelper.enable = false;
     settings = {
       git_protocol = "https";
     };
@@ -86,6 +94,14 @@ in {
 
   programs.jjui = {
     enable = true;
+  };
+
+  programs.radicle = {
+    enable = true;
+  };
+
+  services.radicle.node = {
+    enable = false;
   };
 
   programs.nushell = {
@@ -168,6 +184,7 @@ in {
     files = [
       ".config/distrobox/distrobox.conf"
       ".config/distrobox/containers.ini"
+      ".config/git/config"
     ];
   };
 
