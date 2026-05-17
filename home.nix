@@ -68,9 +68,12 @@ in {
     settings = {
       user.name = "Gray Olson";
       user.email = "gray@grayolson.com";
+      init = {
+        defaultBranch = "main";
+      };
       credential = {
-        "https://github.com".helper = "gh auth git-credential";
-        "https://gist.github.com".helper = "gh auth git-credential";
+        "https://github.com".helper = "!gh auth git-credential";
+        "https://gist.github.com".helper = "!gh auth git-credential";
       };
     };
   };
