@@ -57,7 +57,7 @@ in {
     };
   };
 
-  home.packages = nixPackages ++ customPackages;
+  home.packages = nixPackages ++ customPackages ++ llmPackages;
   
   programs.git = {
     enable = true;
@@ -166,8 +166,8 @@ in {
     xdgDesktopEntries = true;
 
     files = [
-      ".config/containers/custom/main.Containerfile"
-      "distrobox.ini"
+      ".config/distrobox/distrobox.conf"
+      ".config/distrobox/containers.ini"
     ];
   };
 
