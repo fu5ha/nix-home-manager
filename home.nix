@@ -88,25 +88,6 @@ in {
     enable = true;
   };
 
-  programs.distrobox = {
-    enable = true;
-    containers = {
-      main = {
-        image = "ghcr.io/thrix/nix-toolbox:44";
-        additional_packages = "@development-tools clang llvm hx zoxide fd rg";
-        nvidia = true;
-        pull = false;
-        root = false;
-        replace = true;
-        start_now = true;
-      };
-    };
-
-    settings = {
-      container_image_default = "ghcr.io/thrix/nix-toolbox:44";
-    };
-  };
-
   programs.nushell = {
     enable = true;
     configFile.source = ./nushell/config.nu;
@@ -157,7 +138,10 @@ in {
     enable = true;
     # copy to ~/.config
     configFile = {
-      # "nushell/config.nu".source = config.nu;
+      "distrobox" = {
+        recursive = true;
+        source = ./distrobox;
+      };
     };
     # copy to ~/.local/share
     dataFile = {
