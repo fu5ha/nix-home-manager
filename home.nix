@@ -100,6 +100,17 @@ in {
   programs.starship = {
     enable = true;
     enableNushellIntegration = true;
+    settings = {
+      custom = {
+        jj = {
+          when = "jj-starship detect";
+          shell = "jj-starship";
+          format = "$output ";
+        };
+      };
+      git_branch.disabled = true;
+      git_status.disabled = true;
+    };
   };
 
   programs.eza = {
