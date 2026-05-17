@@ -45,15 +45,20 @@ in {
   # release notes.
   home.stateVersion = "25.11"; # Please read the comment before changing.
 
-  # GPU config. disabled for now, see the following if needed in future
+  # GPU config. must updatere e if drivers update
   # https://nix-community.github.io/home-manager/index.xhtml#sec-usage-gpu-non-nixos
-  # targets.genericLinux.gpu = {
-  #   enable = true;
-  #   nvidia = {
-  #     enable = true;
-  #     version = "595.71.05"
-  #   }
-  # };
+  nixpkgs.config.nvidia.acceptLicense = true;
+  targets.genericLinux = {
+    enable = true;
+    gpu = {
+      enable = true;
+      nvidia = {
+        enable = true;
+        sha256 = "sha256-NiA7iWC35JyKQva6H1hjzeNKBek9KyS3mK8G3YRva4I=";
+        version = "595.71.05";
+      };
+    };
+  };
 
   nixpkgs = {
     config = {
