@@ -157,15 +157,6 @@ in {
     enableNushellIntegration = true;
   };
 
-  programs.ghostty = {
-    enable = true;
-    settings = {
-      font-size = 12;
-      mouse-hide-while-typing = true;
-      font-family = "Comic Code";
-    };
-  };
-
   home.shell = {
     enableShellIntegration = true;
     enableNushellIntegration = true;
@@ -192,11 +183,19 @@ in {
     enable = true;
     # copy to ~/.config
     configFile = {
+      "plasma-workspace/env/path.sh".text = "export PATH=$HOME/.local/bin:$PATH";
+
       "distrobox" = {
         recursive = true;
         source = ./distrobox;
       };
+
+      "ghostty" = {
+        recursive = true;
+        source = ./ghostty;
+      };
     };
+
     # copy to ~/.local/share
     dataFile = {
       
@@ -212,7 +211,7 @@ in {
       ".config/distrobox/distrobox.conf"
       ".config/distrobox/containers.ini"
       ".config/git/config"
-      ".config/ghostty/config"
+      ".config/ghostty/config.ghostty"
     ];
   };
 
