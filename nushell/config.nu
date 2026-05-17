@@ -25,6 +25,11 @@ path add "/home/linuxbrew/.linuxbrew/bin"
 path add "~/.cargo/bin"
 path add "~/.radicle/bin"
 
+# add host exec override folder to path if in a distrobox
+if ('CONTAINER_ID' in $env) {
+  path add "~/.local/distrobox-host-bin/"
+}
+
 $env.config.buffer_editor = "hx"
 $env.hm-path = "~/.config/home-manager"
 
