@@ -121,6 +121,10 @@ in {
     enable = true;
     enableNushellIntegration = true;
     settings = {
+      character = {
+        success_symbol = "[~](bold green)";
+        error_symbol = "[~](bold red)";
+      };
       custom = {
         jj = {
           when = "jj-starship detect";
@@ -128,8 +132,13 @@ in {
           format = "$output ";
         };
       };
-      git_branch.disabled = true;
+      git_branch.only_attached = true;
+      git_commit.disabled = true;
       git_status.disabled = true;
+      container = {
+        style = "bold red dimmed";
+        format = "[\\[$symbol $name\\]]($style) ";
+      };
     };
   };
 
