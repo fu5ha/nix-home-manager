@@ -152,6 +152,15 @@ in {
     enableNushellIntegration = true;
   };
 
+  programs.ghostty = {
+    enable = true;
+    settings = {
+      font-size = 12;
+      mouse-hide-while-typing = true;
+      font-family = "Comic Code";
+    };
+  };
+
   home.shell = {
     enableShellIntegration = true;
     enableNushellIntegration = true;
@@ -198,6 +207,7 @@ in {
       ".config/distrobox/distrobox.conf"
       ".config/distrobox/containers.ini"
       ".config/git/config"
+      ".config/ghostty/config"
     ];
   };
 
