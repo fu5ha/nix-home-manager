@@ -1,36 +1,71 @@
-{ config, pkgs, llm-agent-pkgs, username, homeDirectory, ... }:
+{
+  lib,
+  pkgs,
+  extra-pkgs,
+  username,
+  homeDirectory,
+  ...
+}:
 let
-  customPkgs = import ./pkgs/custom.nix {inherit pkgs username;};
-  customPackages = with customPkgs; [
-      fedoraHost
+  fedoraHost = import ./pkgs/fedoraHost.nix { inherit pkgs; };
+  # colgrep = import ./pkgs/colgrep.nix { pkgs = pkgs; };
+
+  nvidiaVersion = "595.71.05";
+  nvidiaSha256 = "sha256-NiA7iWC35JyKQva6H1hjzeNKBek9KyS3mK8G3YRva4I=";
+  nvidiaDriver =
+    (pkgs.linuxPackages.nvidiaPackages.mkDriver {
+      version = nvidiaVersion;
+      sha256_64bit = nvidiaSha256;
+      sha256_aarch64 = nvidiaSha256;
+      useSettings = false;
+      usePersistenced = false;
+    }).override
+      {
+        libsOnly = true;
+      };
+
+  extraPkgs = [
+    # custom
+    fedoraHost
+
+    extra-pkgs.colgrep
+    extra-pkgs.pi
+
+    extra-pkgs.zed
   ];
 
-  nixPackages = with pkgs; [
+  nixPkgs = with pkgs; [
+    # basic shell tools
     nushell
     htop
     jq
     just
-    alejandra
     gh
-    jujutsu
-    jjui
     starship
-    jj-starship
     zoxide
     eza
+
+    # jj
+    jujutsu
+    jjui
+    jj-starship
+
+    # node
     fnm
+
+    # rad
     radicle-node
     radicle-tui
     radicle-desktop
+
+    # nix
+    nixfmt
+    nixd
+    fh
+    devenv
   ];
-
-  llmPackages = with llm-agent-pkgs; [
-    pi
-  ];
-
-  homeManagerConfigDir = pkgs.lib.path.append (/. + homeDirectory) ".config/home-manager";
-
-in {
+in
+{
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = username;
@@ -45,29 +80,57 @@ in {
   # release notes.
   home.stateVersion = "25.11"; # Please read the comment before changing.
 
-  # GPU config. must updatere e if drivers update
+  nixpkgs.config.allowUnfree = true;
+
+  # GPU config. must update here if drivers update
   # https://nix-community.github.io/home-manager/index.xhtml#sec-usage-gpu-non-nixos
-  nixpkgs.config.nvidia.acceptLicense = true;
+  nixpkgs.config = {
+    nvidia.acceptLicense = true;
+    cudaCapabilities = [ "7.5" ];
+    cudaForwardCompat = true;
+    cudaSupport = true;
+  };
+
   targets.genericLinux = {
     enable = true;
     gpu = {
       enable = true;
+      # Home Manager's genericLinux.gpu env currently omits NVIDIA EGL external
+      # platform packages. NixOS includes these in hardware.graphics for NVIDIA;
+      # GTK/WebKitGTK EGL acceleration needs them.
+      #
+      # See also the sessionVariables related to selecting the correct icds
+      drivers = lib.mkForce (pkgs.buildEnv {
+        name = "non-nixos-gpu";
+        paths = [
+          pkgs.mesa
+          pkgs.libvdpau-va-gl
+          pkgs.intel-media-driver
+          nvidiaDriver
+          pkgs.nvidia-vaapi-driver
+          pkgs.egl-wayland
+          pkgs.egl-gbm
+          pkgs.egl-wayland2
+          pkgs.egl-x11
+        ];
+      });
       nvidia = {
         enable = true;
-        sha256 = "sha256-NiA7iWC35JyKQva6H1hjzeNKBek9KyS3mK8G3YRva4I=";
-        version = "595.71.05";
+        sha256 = nvidiaSha256;
+        version = nvidiaVersion;
       };
     };
   };
 
-  nixpkgs = {
-    config = {
-      allowUnfree = true;
-    };
-  };
+  home.packages = nixPkgs ++ extraPkgs;
 
-  home.packages = nixPackages ++ customPackages ++ llmPackages;
-  
+  home.activation.devenvNushellHook = lib.hm.dag.entryAfter [ "installPackages" ] ''
+    mkdir -p "$HOME/.cache/devenv"
+    ${pkgs.devenv}/bin/devenv hook nu > "$HOME/.cache/devenv/hook.nu"
+  '';
+
+  programs.nix-index.enable = true;
+
   programs.git = {
     enable = true;
     settings = {
@@ -96,7 +159,7 @@ in {
     settings = {
       user.name = "Gray Olson";
       user.email = "gray@grayolson.com";
-      ui.default-command = ["log"];
+      ui.default-command = [ "log" ];
       revsets.log = "@ | ancestors(trunk()..(visible_heads() & mine()), 8) | ancestors(trunk(), 3)";
     };
   };
@@ -120,6 +183,9 @@ in {
     shellAliases = {
       hmc = "^($env.config.buffer_editor) ~/.config/home-manager";
     };
+    extraConfig = ''
+      $env.config.hooks.command_not_found = source ${pkgs.nix-index}/etc/profile.d/command-not-found.nu
+    '';
   };
 
   programs.starship = {
@@ -198,7 +264,7 @@ in {
 
     # copy to ~/.local/share
     dataFile = {
-      
+
     };
   };
 
@@ -232,7 +298,9 @@ in {
   #  /etc/profiles/per-user/gray/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    EDITOR = "hx";
+    VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json";
+    __EGL_VENDOR_LIBRARY_FILENAMES = "/run/opengl-driver/share/glvnd/egl_vendor.d/10_nvidia.json";
+    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
   };
 
   # Let Home Manager install and manage itself.

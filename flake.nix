@@ -25,16 +25,41 @@
       url = "github:numtide/llm-agents.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    colgrep = {
+      url = "git+file:///home/gray/git/next-plaid?shallow=1";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    zed = {
+      url = "git+file:///home/gray/git/zed?shallow=1";
+    };
   };
 
   outputs =
-    { nixpkgs, home-manager, nix-config, llm-agents, ... }:
+    {
+      nixpkgs,
+      home-manager,
+      ...
+    } @ inputs :
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
         inherit system;
       };
-      llm-agent-pkgs = llm-agents.packages.${system};
+
+      llm-agent-pkgs = inputs.llm-agents.packages.${system};
+      colgrep-pkgs = (inputs.colgrep.lib.mkPackagesWithCudaCapabilities [ "7.5" ]).${system};
+      extra-pkgs = {
+        pi = llm-agent-pkgs.pi;
+        colgrep = colgrep-pkgs.colgrep;
+        zed = inputs.zed.packages.${system}.default;
+      };
     in
     {
       homeConfigurations."gray" = home-manager.lib.homeManagerConfiguration {
@@ -43,16 +68,17 @@
         # Specify your home configuration modules here, for example,
         # the path to your home.nix.
         modules = [
-          nix-config.homeManagerModules.hostConfig
+          inputs.nix-index-database.homeModules.default
+          inputs.nix-config.homeManagerModules.hostConfig
           ./home.nix
         ];
 
         # Optionally use extraSpecialArgs
         # to pass through arguments to home.nix
         extraSpecialArgs = {
+          extra-pkgs = extra-pkgs;
           username = "gray";
           homeDirectory = "/home/gray";
-          llm-agent-pkgs = llm-agent-pkgs;
         };
       };
     };

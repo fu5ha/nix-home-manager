@@ -47,3 +47,7 @@ if (which fnm | is-not-empty) {
         }
     )
 }
+
+if ("~/.cache/devenv/hook.nu" | path exists) {
+    source "~/.cache/devenv/hook.nu"
+}
