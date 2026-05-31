@@ -24,7 +24,7 @@ let
     extra-pkgs.pi
 
     extra-pkgs.zed
-    extra-pkgs.patchmark
+    extra-pkgs.helix
   ];
 
   nixPkgs = with pkgs; [
@@ -214,6 +214,24 @@ in
   programs.zoxide = {
     enable = true;
     enableNushellIntegration = true;
+  };
+
+  programs.helix = {
+    enable = true;
+
+    package = extra-pkgs.helix;
+    
+    languages = {
+      language-server.patchmark = {
+        command = lib.getExe' extra-pkgs.patchmark "patchmark";
+      };
+      language = [
+        {
+          name = "markdown";
+          language-servers = ["patchmark"];
+        }
+      ];
+    };
   };
 
   home.shell = {
