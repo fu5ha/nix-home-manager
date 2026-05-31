@@ -31,8 +31,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    colgrep = {
-      url = "git+file:///home/gray/git/next-plaid?shallow=1";
+    next-plaid = {
+      url = "github:lightonai/next-plaid";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -54,10 +54,11 @@
       };
 
       llm-agent-pkgs = inputs.llm-agents.packages.${system};
-      colgrep-pkgs = (inputs.colgrep.lib.mkPackagesWithCudaCapabilities [ "7.5" ]).${system};
+      next-plaid-pkgs = (inputs.next-plaid.lib.mkPackagesWithCudaCapabilities [ "7.5" ]).${system};
+      
       extra-pkgs = {
         pi = llm-agent-pkgs.pi;
-        colgrep = colgrep-pkgs.colgrep;
+        colgrep = next-plaid-pkgs.colgrep;
         zed = inputs.zed.packages.${system}.default;
       };
     in
