@@ -2,6 +2,4 @@
 
 My home manager config.
 
-Used to manage dev tools on an atomic Bazzite system. This home manager config exists in a distrobox using [nix-toolbox](https://thrix.github.io/nix-toolbox).
-
-See also [thrix/nix-config](https://github.com/thrix/nix-config).
+Used within [winter](https://github.com/fu5ha/winter), a uBlue (Bazzite)-based atomic distro with Nix installed on top.

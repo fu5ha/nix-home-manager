@@ -3,8 +3,14 @@
 
   # for llm-agents binary cache below
   nixConfig = {
-    extra-substituters = [ "https://cache.numtide.com" ];
-    extra-trusted-public-keys = [ "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=" ];
+    extra-substituters = [
+      "https://cache.numtide.com"
+      "https://zed.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
+      "zed.cachix.org-1:/pHQ6dpMsAZk2DiP4WCL0p9YDNKWj2Q5FL20bNmw1cU="
+    ];
   };
 
   inputs = {
@@ -14,16 +20,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-config = {
-      url = "github:thrix/nix-config";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
-    };
-
+    
     # for pi
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nix-index-database = {
@@ -37,7 +37,12 @@
     };
 
     zed = {
-      url = "git+file:///home/gray/git/zed?shallow=1";
+      url = "git+file:///var/home/gray/git/zed?shallow=1";
+    };
+
+    patchmark = {
+      url = "git+https://radicle.dpc.pw/z3sP3WnHgo1UfwmfmFM9a5cZSSEZR.git";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
@@ -49,6 +54,7 @@
     } @ inputs :
     let
       system = "x86_64-linux";
+      
       pkgs = import nixpkgs {
         inherit system;
       };
@@ -60,6 +66,7 @@
         pi = llm-agent-pkgs.pi;
         colgrep = next-plaid-pkgs.colgrep;
         zed = inputs.zed.packages.${system}.default;
+        patchmark = inputs.patchmark.packages.${system}.default;
       };
     in
     {
@@ -70,7 +77,6 @@
         # the path to your home.nix.
         modules = [
           inputs.nix-index-database.homeModules.default
-          inputs.nix-config.homeManagerModules.hostConfig
           ./home.nix
         ];
 
@@ -78,8 +84,6 @@
         # to pass through arguments to home.nix
         extraSpecialArgs = {
           extra-pkgs = extra-pkgs;
-          username = "gray";
-          homeDirectory = "/home/gray";
         };
       };
     };

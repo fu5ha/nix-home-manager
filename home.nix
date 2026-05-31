@@ -2,14 +2,9 @@
   lib,
   pkgs,
   extra-pkgs,
-  username,
-  homeDirectory,
   ...
 }:
 let
-  fedoraHost = import ./pkgs/fedoraHost.nix { inherit pkgs; };
-  # colgrep = import ./pkgs/colgrep.nix { pkgs = pkgs; };
-
   nvidiaVersion = "595.71.05";
   nvidiaSha256 = "sha256-NiA7iWC35JyKQva6H1hjzeNKBek9KyS3mK8G3YRva4I=";
   nvidiaDriver =
@@ -25,13 +20,11 @@ let
       };
 
   extraPkgs = [
-    # custom
-    fedoraHost
-
     extra-pkgs.colgrep
     extra-pkgs.pi
 
     extra-pkgs.zed
+    extra-pkgs.patchmark
   ];
 
   nixPkgs = with pkgs; [
@@ -68,8 +61,8 @@ in
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
-  home.username = username;
-  home.homeDirectory = homeDirectory;
+  home.username = "gray";
+  home.homeDirectory = "/home/gray";
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -266,19 +259,6 @@ in
     dataFile = {
 
     };
-  };
-
-  hostConfig = {
-    enable = true;
-
-    xdgDesktopEntries = true;
-
-    files = [
-      ".config/distrobox/distrobox.conf"
-      ".config/distrobox/containers.ini"
-      ".config/git/config"
-      ".config/ghostty/config.ghostty"
-    ];
   };
 
   # Home Manager can also manage your environment variables through

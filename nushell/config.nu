@@ -16,22 +16,9 @@
 # You can also pretty-print and page through the documentation for configuration
 # options using:
 #     config nu --doc | nu-highlight | less -R
-use std/util "path add"
-
-path add "~/.local/bin"
-path add "~/bin"
-path add "/home/linuxbrew/.linuxbrew/bin"
-
-path add "~/.cargo/bin"
-path add "~/.radicle/bin"
-
-# add host exec override folder to path if in a distrobox
-if ('CONTAINER_ID' in $env) {
-  path add "~/.local/distrobox-host-bin/"
-}
 
 $env.config.buffer_editor = "hx"
-$env.hm-path = "~/.config/home-manager"
+$env.hm-path = ("~/.config/home-manager" | path expand)
 
 $env.EDITOR = "hx"
 
