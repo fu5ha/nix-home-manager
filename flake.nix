@@ -39,7 +39,7 @@
     # };
 
     zed = {
-      url = "git+file:///var/home/gray/git/zed?shallow=1";
+      url = "git+file:///var/home/gray/git/zed?shallow=1&rev=f7ca86e6eeabd135645c4f25aa1ae83f5cf0231b";
     };
 
     patchmark = {

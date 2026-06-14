@@ -23,7 +23,7 @@ let
     # extra-pkgs.colgrep
     extra-pkgs.pi
 
-    extra-pkgs.zed
+    # extra-pkgs.zed
     extra-pkgs.helix
   ];
 
@@ -56,6 +56,9 @@ let
     nixd
     fh
     devenv
+
+    # editor
+    zed
   ];
 in
 {
