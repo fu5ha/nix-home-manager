@@ -33,10 +33,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    next-plaid = {
-      url = "github:lightonai/next-plaid";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # next-plaid = {
+    #   url = "github:lightonai/next-plaid";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     zed = {
       url = "git+file:///var/home/gray/git/zed?shallow=1";
@@ -67,11 +67,11 @@
       };
 
       llm-agent-pkgs = inputs.llm-agents.packages.${system};
-      next-plaid-pkgs = (inputs.next-plaid.lib.mkPackagesWithCudaCapabilities [ "7.5" ]).${system};
+      # next-plaid-pkgs = (inputs.next-plaid.lib.mkPackagesWithCudaCapabilities [ "7.5" ]).${system};
       
       extra-pkgs = {
         pi = llm-agent-pkgs.pi;
-        colgrep = next-plaid-pkgs.colgrep;
+        # colgrep = next-plaid-pkgs.colgrep;
         zed = inputs.zed.packages.${system}.default;
         patchmark = inputs.patchmark.packages.${system}.default;
         helix = inputs.helix.packages.${system}.default;

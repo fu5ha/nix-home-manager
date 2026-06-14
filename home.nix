@@ -20,7 +20,7 @@ let
       };
 
   extraPkgs = [
-    extra-pkgs.colgrep
+    # extra-pkgs.colgrep
     extra-pkgs.pi
 
     extra-pkgs.zed
