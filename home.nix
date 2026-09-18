@@ -5,8 +5,8 @@
   ...
 }:
 let
-  nvidiaVersion = "595.71.05";
-  nvidiaSha256 = "sha256-NiA7iWC35JyKQva6H1hjzeNKBek9KyS3mK8G3YRva4I=";
+  nvidiaVersion = "610.43.02";
+  nvidiaSha256 = "sha256-MDSgVLtM33dS/43CclZMsQVROAS/9TU4lFkBsWyndGM=";
   nvidiaDriver =
     (pkgs.linuxPackages.nvidiaPackages.mkDriver {
       version = nvidiaVersion;
@@ -22,6 +22,7 @@ let
   extraPkgs = [
     # extra-pkgs.colgrep
     extra-pkgs.pi
+    extra-pkgs.codex
 
     extra-pkgs.zed
     extra-pkgs.helix
@@ -37,6 +38,8 @@ let
     starship
     zoxide
     eza
+    sendme
+    dumbpipe
 
     # jj
     jujutsu
@@ -296,9 +299,9 @@ in
   #  /etc/profiles/per-user/gray/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json";
-    __EGL_VENDOR_LIBRARY_FILENAMES = "/run/opengl-driver/share/glvnd/egl_vendor.d/10_nvidia.json";
-    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+    # VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json";
+    # __EGL_VENDOR_LIBRARY_FILENAMES = "/run/opengl-driver/share/glvnd/egl_vendor.d/10_nvidia.json";
+    # __GLX_VENDOR_LIBRARY_NAME = "nvidia";
   };
 
   # Let Home Manager install and manage itself.
