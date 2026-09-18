@@ -23,6 +23,7 @@ let
     # extra-pkgs.colgrep
     extra-pkgs.pi
     extra-pkgs.codex
+    extra-pkgs.opencode2
 
     extra-pkgs.zed
     extra-pkgs.helix

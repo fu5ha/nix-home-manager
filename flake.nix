@@ -72,6 +72,7 @@
       extra-pkgs = {
         pi = llm-agent-pkgs.pi;
         codex = llm-agent-pkgs.codex;
+        opencode2 = llm-agent-pkgs.opencode2;
         # colgrep = next-plaid-pkgs.colgrep;
         zed = inputs.zed.packages.${system}.default;
         patchmark = inputs.patchmark.packages.${system}.default;
