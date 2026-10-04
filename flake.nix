@@ -68,7 +68,6 @@
         codex = llm-agent-pkgs.codex;
         opencode2 = llm-agent-pkgs.opencode2;
         # colgrep = next-plaid-pkgs.colgrep;
-        zed = pkgs.zed-editor;
         patchmark = inputs.patchmark.packages.${system}.default;
         helix = inputs.helix.packages.${system}.default;
       };

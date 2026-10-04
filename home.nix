@@ -7,6 +7,7 @@
 let
   # Use (withNixGraphics pkgs.someApp) for Nix GUI apps needing NVIDIA graphics.
   withNixGraphics = import ./lib/with-nix-graphics.nix { inherit pkgs; };
+  zed = withNixGraphics pkgs.zed-editor-fhs;
 
   nvidiaVersion = "615.71.09";
   nvidiaSha256 = "sha256-zc7tIrvrYSSNGm3qvCWWZz46ZQFpjucayNL9wo87cP4=";
@@ -28,11 +29,15 @@ let
     extra-pkgs.codex
     extra-pkgs.opencode2
 
-    (withNixGraphics extra-pkgs.zed)
     extra-pkgs.helix
   ];
 
   nixPkgs = with pkgs; [
+    zed
+    (writeShellScriptBin "zed" ''
+      exec ${zed}/bin/zeditor "$@"
+    '')
+
     # basic shell tools
     nushell
     htop
