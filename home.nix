@@ -5,6 +5,9 @@
   ...
 }:
 let
+  # Use (withNixGraphics pkgs.someApp) for Nix GUI apps needing NVIDIA graphics.
+  withNixGraphics = import ./lib/with-nix-graphics.nix { inherit pkgs; };
+
   nvidiaVersion = "615.71.09";
   nvidiaSha256 = "sha256-zc7tIrvrYSSNGm3qvCWWZz46ZQFpjucayNL9wo87cP4=";
   nvidiaDriver =
@@ -25,7 +28,7 @@ let
     extra-pkgs.codex
     extra-pkgs.opencode2
 
-    extra-pkgs.zed
+    (withNixGraphics extra-pkgs.zed)
     extra-pkgs.helix
   ];
 
