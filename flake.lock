@@ -29,6 +29,25 @@
         "type": "github"
       }
     },
+    "autolith": {
+      "inputs": {
+        "flake-parts": "flake-parts",
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1791140185,
+        "narHash": "sha256-GlijVxKC0Mc+eButzsI2jIY0YF03cjNaw+xYB8STCQQ=",
+        "owner": "lambda-symbolics",
+        "repo": "autolith",
+        "rev": "466034b3107368ca78fcbafc39a346917a633988",
+        "type": "github"
+      },
+      "original": {
+        "owner": "lambda-symbolics",
+        "repo": "autolith",
+        "type": "github"
+      }
+    },
     "bun2nix": {
       "inputs": {
         "flake-parts": [
@@ -152,6 +171,27 @@
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
+          "autolith",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1782949081,
+        "narHash": "sha256-vp6Y/Grm98ESt6ceOkWiHWyZRDV3J1RID4w+6NWK9yA=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "17c9d6cdfc60c64f4ee8d306f9bc0b4ccb51481e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
+    "flake-parts_2": {
+      "inputs": {
+        "nixpkgs-lib": [
           "llm-agents",
           "nixpkgs"
         ]
@@ -231,7 +271,7 @@
         "crane": "crane",
         "fenix": "fenix",
         "flake-utils": "flake-utils_2",
-        "nixpkgs": "nixpkgs_4",
+        "nixpkgs": "nixpkgs_5",
         "systems": "systems_3"
       },
       "locked": {
@@ -250,7 +290,7 @@
     },
     "helix": {
       "inputs": {
-        "nixpkgs": "nixpkgs",
+        "nixpkgs": "nixpkgs_2",
         "rust-overlay": "rust-overlay"
       },
       "locked": {
@@ -291,8 +331,8 @@
     "llm-agents": {
       "inputs": {
         "bun2nix": "bun2nix",
-        "flake-parts": "flake-parts",
-        "nixpkgs": "nixpkgs_2",
+        "flake-parts": "flake-parts_2",
+        "nixpkgs": "nixpkgs_3",
         "systems": "systems",
         "treefmt-nix": "treefmt-nix"
       },
@@ -357,7 +397,7 @@
     "nix-utils": {
       "inputs": {
         "flake-utils": "flake-utils_3",
-        "nixpkgs": "nixpkgs_5"
+        "nixpkgs": "nixpkgs_6"
       },
       "locked": {
         "lastModified": 1744222205,
@@ -375,6 +415,22 @@
     },
     "nixpkgs": {
       "locked": {
+        "lastModified": 1786348146,
+        "narHash": "sha256-we5zDEFfn8TgzeWKjKDMIjeQZ59omEPl23NIF+13/ys=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "d482ef84049d9b7276b83a06e4e4d76983830097",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "d482ef84049d9b7276b83a06e4e4d76983830097",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
         "lastModified": 1775036866,
         "narHash": "sha256-ZojAnPuCdy657PbTq5V0Y+AHKhZAIwSIT2cb8UgAz/U=",
         "owner": "nixos",
@@ -389,7 +445,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
+    "nixpkgs_3": {
       "locked": {
         "lastModified": 1790600678,
         "narHash": "sha256-6k3n7X2UsZ6tAlWTz99RimiZab+17tMUrw9sRUcELiA=",
@@ -405,7 +461,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_3": {
+    "nixpkgs_4": {
       "locked": {
         "lastModified": 1791048980,
         "narHash": "sha256-KgItSKML8Xvte0B7/uGnBDsYzSnnKHcOaiUbgWBXLXw=",
@@ -421,7 +477,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_4": {
+    "nixpkgs_5": {
       "locked": {
         "lastModified": 1771714954,
         "narHash": "sha256-nhZJPnBavtu40/L2aqpljrfUNb2rxmWTmSjK2c9UKds=",
@@ -437,7 +493,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_5": {
+    "nixpkgs_6": {
       "locked": {
         "lastModified": 1629252929,
         "narHash": "sha256-Aj20gmGBs8TG7pyaQqgbsqAQ6cB+TVuL18Pk3DPBxcQ=",
@@ -477,11 +533,12 @@
     },
     "root": {
       "inputs": {
+        "autolith": "autolith",
         "helix": "helix",
         "home-manager": "home-manager",
         "llm-agents": "llm-agents",
         "nix-index-database": "nix-index-database",
-        "nixpkgs": "nixpkgs_3",
+        "nixpkgs": "nixpkgs_4",
         "patchmark": "patchmark"
       }
     },

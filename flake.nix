@@ -45,6 +45,10 @@
       # url = "github:helix-editor/helix";
       url = "github:mattwparas/helix?rev=4d86612df48447088ef4190bf503fd54a7562aa9";
     };
+
+    autolith = {
+      url = "github:lambda-symbolics/autolith";
+    };
   };
 
   outputs =
@@ -70,6 +74,7 @@
         # colgrep = next-plaid-pkgs.colgrep;
         patchmark = inputs.patchmark.packages.${system}.default;
         helix = inputs.helix.packages.${system}.default;
+        autolith = inputs.autolith.packages.${system}.default;
       };
     in
     {

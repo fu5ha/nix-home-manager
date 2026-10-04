@@ -28,6 +28,7 @@ let
     extra-pkgs.pi
     extra-pkgs.codex
     extra-pkgs.opencode2
+    extra-pkgs.autolith
 
     extra-pkgs.helix
   ];
