@@ -37,6 +37,7 @@ let
     (writeShellScriptBin "zed" ''
       exec ${zed}/bin/zeditor "$@"
     '')
+    (withNixGraphics vscode-fhs)
 
     # basic shell tools
     nushell
