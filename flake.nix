@@ -5,12 +5,10 @@
   nixConfig = {
     extra-substituters = [
       "https://cache.numtide.com"
-      "https://zed.cachix.org"
       "https://helix.cachix.org"
     ];
     extra-trusted-public-keys = [
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
-      "zed.cachix.org-1:/pHQ6dpMsAZk2DiP4WCL0p9YDNKWj2Q5FL20bNmw1cU="
       "helix.cachix.org-1:ejp9KQpR1FBI2onstMQ34yogDm4OgU2ru6lIwPvuCVs="
     ];
   };
@@ -37,10 +35,6 @@
     #   url = "github:lightonai/next-plaid";
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
-
-    zed = {
-      url = "git+file:///var/home/gray/git/zed?shallow=1&rev=f7ca86e6eeabd135645c4f25aa1ae83f5cf0231b";
-    };
 
     patchmark = {
       url = "git+https://radicle.dpc.pw/z3sP3WnHgo1UfwmfmFM9a5cZSSEZR.git";
@@ -74,7 +68,7 @@
         codex = llm-agent-pkgs.codex;
         opencode2 = llm-agent-pkgs.opencode2;
         # colgrep = next-plaid-pkgs.colgrep;
-        zed = inputs.zed.packages.${system}.default;
+        zed = pkgs.zed-editor;
         patchmark = inputs.patchmark.packages.${system}.default;
         helix = inputs.helix.packages.${system}.default;
       };
