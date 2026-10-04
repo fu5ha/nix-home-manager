@@ -5,8 +5,8 @@
   ...
 }:
 let
-  nvidiaVersion = "610.43.02";
-  nvidiaSha256 = "sha256-MDSgVLtM33dS/43CclZMsQVROAS/9TU4lFkBsWyndGM=";
+  nvidiaVersion = "615.71.09";
+  nvidiaSha256 = "sha256-zc7tIrvrYSSNGm3qvCWWZz46ZQFpjucayNL9wo87cP4=";
   nvidiaDriver =
     (pkgs.linuxPackages.nvidiaPackages.mkDriver {
       version = nvidiaVersion;
