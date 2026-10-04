@@ -51,9 +51,9 @@ let
     fnm
 
     # rad
-    radicle-node
-    radicle-tui
-    radicle-desktop
+    # radicle-node
+    # radicle-tui
+    # radicle-desktop
 
     # nix
     nixfmt
@@ -165,13 +165,13 @@ in
     enable = true;
   };
 
-  programs.radicle = {
-    enable = true;
-  };
+  # programs.radicle = {
+  #   enable = true;
+  # };
 
-  services.radicle.node = {
-    enable = false;
-  };
+  # services.radicle.node = {
+  #   enable = false;
+  # };
 
   programs.nushell = {
     enable = true;
