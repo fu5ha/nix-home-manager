@@ -71,6 +71,7 @@
         pi = llm-agent-pkgs.pi;
         codex = llm-agent-pkgs.codex;
         opencode2 = llm-agent-pkgs.opencode2;
+        t3code-desktop = llm-agent-pkgs.t3code-desktop;
         # colgrep = next-plaid-pkgs.colgrep;
         patchmark = inputs.patchmark.packages.${system}.default;
         helix = inputs.helix.packages.${system}.default;
