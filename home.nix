@@ -29,7 +29,7 @@ let
     extra-pkgs.codex
     # extra-pkgs.opencode2
     extra-pkgs.autolith
-    (withNixGraphics extra-pkgs.t3code-desktop)
+    # (withNixGraphics extra-pkgs.t3code-desktop)
 
     extra-pkgs.helix
   ];
