@@ -35,11 +35,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1791843992,
-        "narHash": "sha256-NVQzBek5qaaALpblq2g0F5E7HW37F3UGVcgO7l0PdTc=",
+        "lastModified": 1791844294,
+        "narHash": "sha256-tHGB4eZd5f1YOh0JfomyLJcT0DMPOY/h6qvBg9CH5eQ=",
         "owner": "lambda-symbolics",
         "repo": "autolith",
-        "rev": "1aa7f1c12bac7f1711833ecda4428451135313c8",
+        "rev": "e336a19956bbc8e26018dd7cedd9cf996c0037a7",
         "type": "github"
       },
       "original": {
@@ -495,11 +495,11 @@
     },
     "nixpkgs_6": {
       "locked": {
-        "lastModified": 1782847189,
-        "narHash": "sha256-twXPFqFsrrY5r28Zh7Homgcp2gUMBgQ6WDS98Q/3xFI=",
+        "lastModified": 1776067740,
+        "narHash": "sha256-B35lpsqnSZwn1Lmz06BpwF7atPgFmUgw1l8KAV3zpVQ=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "b6018f87da91d19d0ab4cf979885689b469cdd41",
+        "rev": "7e495b747b51f95ae15e74377c5ce1fe69c1765f",
         "type": "github"
       },
       "original": {
@@ -688,7 +688,7 @@
     "t3code-releases": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-y0mJG6HSdkCE00HMlLCz+2XwV04WVL7pzGtg4nIS9y4=",
+        "narHash": "sha256-yTGRW+KzaN45DNA76/mjKYxHFvmuP47HkrBKZYdRB0M=",
         "type": "file",
         "url": "https://api.github.com/repos/pingdotgg/t3code/releases?per_page=100"
       },
