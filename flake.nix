@@ -26,6 +26,12 @@
       url = "github:numtide/llm-agents.nix";
     };
 
+    # Lock release metadata so `nix flake update` also updates desktop nightlies.
+    t3code-releases = {
+      url = "file+https://api.github.com/repos/pingdotgg/t3code/releases?per_page=100";
+      flake = false;
+    };
+
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -71,7 +77,9 @@
         pi = llm-agent-pkgs.pi;
         codex = llm-agent-pkgs.codex;
         opencode2 = llm-agent-pkgs.opencode2;
-        t3code-desktop = llm-agent-pkgs.t3code-desktop;
+        t3code-desktop = pkgs.callPackage ./lib/t3code-nightly.nix {
+          releasesFile = inputs.t3code-releases;
+        };
         # colgrep = next-plaid-pkgs.colgrep;
         patchmark = inputs.patchmark.packages.${system}.default;
         helix = inputs.helix.packages.${system}.default;
