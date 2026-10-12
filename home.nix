@@ -236,17 +236,17 @@ in
 
     package = extra-pkgs.helix;
     
-    languages = {
-      language-server.patchmark = {
-        command = lib.getExe' extra-pkgs.patchmark "patchmark";
-      };
-      language = [
-        {
-          name = "markdown";
-          language-servers = ["patchmark"];
-        }
-      ];
-    };
+    # languages = {
+    #   language-server.patchmark = {
+    #     command = lib.getExe' extra-pkgs.patchmark "patchmark";
+    #   };
+    #   language = [
+    #     {
+    #       name = "markdown";
+    #       language-servers = ["patchmark"];
+    #     }
+    #   ];
+    # };
   };
 
   home.shell = {

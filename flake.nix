@@ -44,7 +44,6 @@
 
     patchmark = {
       url = "git+https://radicle.dpc.pw/z3sP3WnHgo1UfwmfmFM9a5cZSSEZR.git";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     helix = {
@@ -81,7 +80,7 @@
           releasesFile = inputs.t3code-releases;
         };
         # colgrep = next-plaid-pkgs.colgrep;
-        patchmark = inputs.patchmark.packages.${system}.default;
+        # patchmark = inputs.patchmark.packages.${system}.default;
         helix = inputs.helix.packages.${system}.default;
         autolith = inputs.autolith.packages.${system}.default;
       };
