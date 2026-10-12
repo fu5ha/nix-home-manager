@@ -3,6 +3,7 @@
   stdenv,
   fetchurl,
   appimageTools,
+  runtimeShell,
   releasesFile,
 }:
 let
@@ -42,6 +43,16 @@ appimageTools.wrapType2 {
   inherit pname version src;
 
   extraInstallCommands = ''
+    # Match upstream DesktopCliShim: run the bundled server CLI, not the GUI.
+    # Reuse the AppImage's FHS environment for Electron and native modules.
+    cat > "$out/bin/t3" <<EOF
+    #!${runtimeShell}
+    export ELECTRON_RUN_AS_NODE=1
+    export T3CODE_CLI_PATH="$out/bin/t3"
+    export T3CODE_HOME="\''${T3CODE_HOME:-\$HOME/.t3}"
+    exec "$out/bin/${pname}" "${contents}/resources/app.asar/apps/server/dist/bin.mjs" "\$@"
+    EOF
+    chmod +x "$out/bin/t3"
     mkdir -p "$out/share/applications"
     for desktop in ${contents}/*.desktop; do
       install -m444 "$desktop" "$out/share/applications/$(basename "$desktop")"
