@@ -85,10 +85,23 @@
         pi = llm-agent-pkgs.pi;
         codex = llm-agent-pkgs.codex;
         muse-code = llm-agent-pkgs.muse-code;
-        agent-browser = llm-agent-pkgs.agent-browser;
         opencode2 = llm-agent-pkgs.opencode2;
         t3code-desktop = pkgs.callPackage ./lib/t3code-nightly.nix {
           releasesFile = inputs.t3code-releases;
+        };
+        # From-source nightly build (fork of numtide/llm-agents.nix t3code).
+        # Build standalone with `nix build .#t3code-src`. See
+        # lib/t3code/unwrapped.nix for how to bump the nightly.
+        t3code-src = pkgs.callPackage ./lib/t3code/package.nix {
+          t3code-unwrapped = pkgs.callPackage ./lib/t3code/unwrapped.nix {
+            formatelf = pkgs.callPackage ./lib/t3code/formatelf.nix { };
+            versionCheckHomeHook =
+              pkgs.callPackage ./lib/t3code/versionCheckHomeHook/package.nix { };
+          };
+          providerPackages = [
+            llm-agent-pkgs.pi
+            llm-agent-pkgs.codex
+          ];
         };
         # colgrep = next-plaid-pkgs.colgrep;
         # patchmark = inputs.patchmark.packages.${system}.default;
@@ -98,6 +111,8 @@
       };
     in
     {
+      packages.${system}.t3code-src = extra-pkgs.t3code-src;
+
       homeConfigurations."gray" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
 

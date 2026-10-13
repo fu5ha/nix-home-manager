@@ -31,10 +31,15 @@ let
     extra-pkgs.pi
     extra-pkgs.codex
     extra-pkgs.muse-code
-    extra-pkgs.agent-browser
+    # agent-browser intentionally not installed on the host: it lives in
+    # the helpers container; Pi reaches it via MCP over `podman exec`.
     # extra-pkgs.opencode2
     # extra-pkgs.autolith
-    (withNixGraphics extra-pkgs.t3code-desktop)
+    # From-source build (lib/t3code): `t3` CLI from the main output,
+    # desktop app from the `desktop` output. The AppImage package
+    # (extra-pkgs.t3code-desktop) remains as a fallback but is unused.
+    extra-pkgs.t3code-src
+    (withNixGraphics extra-pkgs.t3code-src.desktop)
 
     extra-pkgs.helix
 
@@ -137,18 +142,16 @@ in
 
   # T3 Code background service, replacing `t3 service install`.
   #
-  # The upstream installer cannot work with this packaging: `t3` runs inside
-  # the AppImage's bwrap FHS sandbox, where its `systemctl --user` probe
-  # fails (reported as "user-manager-unavailable"), and even past that it
-  # would download a self-pinned runtime into ~/.t3/runtime/versions and
-  # point the unit at its `__service-launcher`, i.e. a second copy of t3
-  # that `t3 update` mutates outside Nix. Upstream's launcher ultimately
-  # just spawns `<t3> serve`, so run the Nix-packaged one directly;
-  # updates then flow through `nix flake update` + switch like everything
-  # else. Do not use `t3 service install/update/uninstall` or rely on
-  # `t3 service status` (it compares against the upstream-pinned unit);
-  # manage this with `systemctl --user {status,restart,stop} t3code` and
-  # `journalctl --user -u t3code` instead.
+  # Do not use the upstream installer (`t3 service install`): it would
+  # download a self-pinned runtime into ~/.t3/runtime/versions and point
+  # the unit at its `__service-launcher`, i.e. a second copy of t3 that
+  # `t3 update` mutates outside Nix. Upstream's launcher ultimately just
+  # spawns `<t3> serve`, so run the Nix-packaged one directly; updates
+  # then flow through home-manager switches like everything else (plus a
+  # manual nightly bump in lib/t3code/unwrapped.nix). Do not rely on
+  # `t3 service status` either (it compares against the upstream-pinned
+  # unit); manage this with `systemctl --user {status,restart,stop} t3code`
+  # and `journalctl --user -u t3code` instead.
   #
   # Note: starts on login. To also start at boot / survive logout, run
   # `sudo loginctl enable-linger gray` once (Home Manager cannot do that).
@@ -169,7 +172,12 @@ in
         "T3_BOOT_SERVICE_UNIT=t3code.service"
       ];
       # Headless server; no need for the GPU-wrapped desktop package.
-      ExecStart = "${lib.getExe' extra-pkgs.t3code-desktop "t3"} serve";
+      # --tailscale-serve: the server runs `tailscale serve` to expose its
+      # loopback backend at https://bazzite.<tailnet>.ts.net while it runs
+      # (mapping removed on shutdown), so paired remote environments keep
+      # working when the desktop app is closed. Requires MagicDNS + HTTPS
+      # enabled in the tailnet admin console.
+      ExecStart = "${lib.getExe' extra-pkgs.t3code-src "t3"} serve --tailscale-serve";
       KillMode = "mixed";
       OOMPolicy = "continue";
       Restart = "always";
