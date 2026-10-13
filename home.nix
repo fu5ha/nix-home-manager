@@ -27,6 +27,7 @@ let
     # extra-pkgs.colgrep
     extra-pkgs.pi
     extra-pkgs.codex
+    extra-pkgs.muse-code
     # extra-pkgs.opencode2
     # extra-pkgs.autolith
     (withNixGraphics extra-pkgs.t3code-desktop)

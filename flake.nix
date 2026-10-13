@@ -75,6 +75,7 @@
       extra-pkgs = {
         pi = llm-agent-pkgs.pi;
         codex = llm-agent-pkgs.codex;
+        muse-code = llm-agent-pkgs.muse-code;
         opencode2 = llm-agent-pkgs.opencode2;
         t3code-desktop = pkgs.callPackage ./lib/t3code-nightly.nix {
           releasesFile = inputs.t3code-releases;
