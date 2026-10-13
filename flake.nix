@@ -6,10 +6,12 @@
     extra-substituters = [
       "https://cache.numtide.com"
       "https://helix.cachix.org"
+      "https://zed.cachix.org"
     ];
     extra-trusted-public-keys = [
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
       "helix.cachix.org-1:ejp9KQpR1FBI2onstMQ34yogDm4OgU2ru6lIwPvuCVs="
+      "zed.cachix.org-1:/pHQ6dpMsAZk2DiP4WCL0p9YDNKWj2Q5FL20bNmw1cU="
     ];
   };
 
@@ -54,6 +56,13 @@
     autolith = {
       url = "github:lambda-symbolics/autolith";
     };
+
+    # Local checkout of fu5ha/zed so fork changes can land without a push.
+    # Advance with `nix flake update zed` after moving the jj-inbox-fork
+    # bookmark; no nixpkgs follows, the fork builds against its locked nixpkgs.
+    zed = {
+      url = "git+file:///home/gray/git/zed?ref=jj-inbox-fork";
+    };
   };
 
   outputs =
@@ -76,6 +85,7 @@
         pi = llm-agent-pkgs.pi;
         codex = llm-agent-pkgs.codex;
         muse-code = llm-agent-pkgs.muse-code;
+        agent-browser = llm-agent-pkgs.agent-browser;
         opencode2 = llm-agent-pkgs.opencode2;
         t3code-desktop = pkgs.callPackage ./lib/t3code-nightly.nix {
           releasesFile = inputs.t3code-releases;
@@ -84,6 +94,7 @@
         # patchmark = inputs.patchmark.packages.${system}.default;
         helix = inputs.helix.packages.${system}.default;
         autolith = inputs.autolith.packages.${system}.default;
+        zed = inputs.zed.packages.${system}.default;
       };
     in
     {

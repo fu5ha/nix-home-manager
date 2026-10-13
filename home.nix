@@ -7,7 +7,10 @@
 let
   # Use (withNixGraphics pkgs.someApp) for Nix GUI apps needing NVIDIA graphics.
   withNixGraphics = import ./lib/with-nix-graphics.nix { inherit pkgs; };
-  zed = withNixGraphics pkgs.zed-editor-fhs;
+  # Fork build (~/git/zed, jj-inbox-fork), plain package without nixpkgs'
+  # FHS wrapper; its bin/zed CLI execs libexec/zed-editor and inherits
+  # these graphics env vars.
+  zed = withNixGraphics extra-pkgs.zed;
 
   nvidiaVersion = "615.71.09";
   nvidiaSha256 = "sha256-zc7tIrvrYSSNGm3qvCWWZz46ZQFpjucayNL9wo87cP4=";
@@ -28,18 +31,17 @@ let
     extra-pkgs.pi
     extra-pkgs.codex
     extra-pkgs.muse-code
+    extra-pkgs.agent-browser
     # extra-pkgs.opencode2
     # extra-pkgs.autolith
     (withNixGraphics extra-pkgs.t3code-desktop)
 
     extra-pkgs.helix
+
+    zed
   ];
 
   nixPkgs = with pkgs; [
-    zed
-    (writeShellScriptBin "zed" ''
-      exec ${zed}/bin/zeditor "$@"
-    '')
     (withNixGraphics vscode-fhs)
 
     # basic shell tools
@@ -132,6 +134,52 @@ in
   };
 
   home.packages = nixPkgs ++ extraPkgs;
+
+  # T3 Code background service, replacing `t3 service install`.
+  #
+  # The upstream installer cannot work with this packaging: `t3` runs inside
+  # the AppImage's bwrap FHS sandbox, where its `systemctl --user` probe
+  # fails (reported as "user-manager-unavailable"), and even past that it
+  # would download a self-pinned runtime into ~/.t3/runtime/versions and
+  # point the unit at its `__service-launcher`, i.e. a second copy of t3
+  # that `t3 update` mutates outside Nix. Upstream's launcher ultimately
+  # just spawns `<t3> serve`, so run the Nix-packaged one directly;
+  # updates then flow through `nix flake update` + switch like everything
+  # else. Do not use `t3 service install/update/uninstall` or rely on
+  # `t3 service status` (it compares against the upstream-pinned unit);
+  # manage this with `systemctl --user {status,restart,stop} t3code` and
+  # `journalctl --user -u t3code` instead.
+  #
+  # Note: starts on login. To also start at boot / survive logout, run
+  # `sudo loginctl enable-linger gray` once (Home Manager cannot do that).
+  systemd.user.startServices = "sd-switch";
+  systemd.user.services.t3code = {
+    Unit = {
+      Description = "T3 Code server";
+      StartLimitIntervalSec = 300;
+      StartLimitBurst = 5;
+    };
+    Service = {
+      Type = "simple";
+      WorkingDirectory = "%h";
+      Environment = [
+        "T3CODE_HOME=%h/.t3"
+        # Same marker upstream's unit sets so the server knows it runs as
+        # the boot service (it also detects this from its cgroup name).
+        "T3_BOOT_SERVICE_UNIT=t3code.service"
+      ];
+      # Headless server; no need for the GPU-wrapped desktop package.
+      ExecStart = "${lib.getExe' extra-pkgs.t3code-desktop "t3"} serve";
+      KillMode = "mixed";
+      OOMPolicy = "continue";
+      Restart = "always";
+      RestartSec = 5;
+      CPUWeight = 1000;
+      IOWeight = 1000;
+      ManagedOOMPreference = "avoid";
+    };
+    Install.WantedBy = [ "default.target" ];
+  };
 
   home.activation.devenvNushellHook = lib.hm.dag.entryAfter [ "installPackages" ] ''
     mkdir -p "$HOME/.cache/devenv"
