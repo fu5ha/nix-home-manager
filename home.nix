@@ -12,8 +12,8 @@ let
   # these graphics env vars.
   zed = withNixGraphics extra-pkgs.zed;
 
-  nvidiaVersion = "615.71.09";
-  nvidiaSha256 = "sha256-zc7tIrvrYSSNGm3qvCWWZz46ZQFpjucayNL9wo87cP4=";
+  nvidiaVersion = "615.78.08";
+  nvidiaSha256 = "sha256-Pj9t3cLudnoIGFMAr3vjyyhuznZpjS3eNSRZl4LQf/4=";
   nvidiaDriver =
     (pkgs.linuxPackages.nvidiaPackages.mkDriver {
       version = nvidiaVersion;
