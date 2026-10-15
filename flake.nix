@@ -90,8 +90,8 @@
           releasesFile = inputs.t3code-releases;
         };
         # From-source nightly build (fork of numtide/llm-agents.nix t3code).
-        # Build standalone with `nix build .#t3code-src`. See
-        # lib/t3code/unwrapped.nix for how to bump the nightly.
+        # Build standalone with `nix build .#t3code-src`; bump the
+        # nightly with `scripts/update-t3code.py`.
         t3code-src = pkgs.callPackage ./lib/t3code/package.nix {
           t3code-unwrapped = pkgs.callPackage ./lib/t3code/unwrapped.nix {
             formatelf = pkgs.callPackage ./lib/t3code/formatelf.nix { };

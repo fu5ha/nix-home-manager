@@ -7,16 +7,12 @@
 # source and runs directly on the host (nixpkgs Electron + Node), so agent
 # processes are NOT inside an FHS bubblewrap sandbox.
 #
-# To bump the nightly:
-#   1. set `version` below to the new nightly (without the leading v)
-#   2. update src hash:
-#        nix store prefetch-file --unpack --name source \
-#          https://github.com/pingdotgg/t3code/archive/refs/tags/v<version>.tar.gz
-#   3. set pnpmDeps hash to lib.fakeHash, build, copy the "got:" hash
-#   4. if the build complains: update spdxLicenses.rev/hash when upstream
-#      moves SPDX_LICENSE_LIST_REVISION, resourceMonitor cargoHash when
-#      native/resource-monitor/Cargo.lock changes, and the DesktopEnvironment
-#      postPatch when that line changes. Electron must not outrun nixpkgs.
+# To bump the nightly, run `scripts/update-t3code.py` from the repo
+# root: it updates `version`, the src hash, and the pnpmDeps /
+# spdxLicenses / resourceMonitor cargoHash hashes, and verifies the
+# build. Manual fixing is only needed when the DesktopEnvironment
+# postPatch stops applying or upstream Electron outruns nixpkgs;
+# the script checks both and aborts before editing in those cases.
 {
   lib,
   stdenv,
@@ -47,14 +43,14 @@
 
 let
   pname = "t3code";
-  version = "0.0.46-nightly.20261013.3042";
+  version = "0.0.46-nightly.20261015.3171";
   pnpm = pnpm_11;
 
   src = fetchFromGitHub {
     owner = "pingdotgg";
     repo = "t3code";
     tag = "v${version}";
-    hash = "sha256-EwLQrgvSTs3LaIcGJOYDnvLXwVu9abUrADQd5lkKsGY=";
+    hash = "sha256-IQqpPqaivx0dibPE5aJpTDH58cl4hD6V67De8H0gcbA=";
   };
 
   # The web build's third-party-licenses vite plugin downloads SPDX license
@@ -143,7 +139,7 @@ stdenv.mkDerivation {
       pnpmWorkspaces
       ;
     fetcherVersion = 4;
-    hash = "sha256-cIsCMDSm5qwyfNcc5sHPb/sfRxDNyTjVSNyNg4P9+9k=";
+    hash = "sha256-oX4tOu20tYO3ci7VvSEL8eFgxAYWp5HlQFSfAWJGJmg=";
   };
 
   nativeBuildInputs = [

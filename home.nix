@@ -147,8 +147,8 @@ in
   # the unit at its `__service-launcher`, i.e. a second copy of t3 that
   # `t3 update` mutates outside Nix. Upstream's launcher ultimately just
   # spawns `<t3> serve`, so run the Nix-packaged one directly; updates
-  # then flow through home-manager switches like everything else (plus a
-  # manual nightly bump in lib/t3code/unwrapped.nix). Do not rely on
+  # then flow through home-manager switches like everything else (after
+  # bumping the pinned nightly with scripts/update-t3code.py). Do not rely on
   # `t3 service status` either (it compares against the upstream-pinned
   # unit); manage this with `systemctl --user {status,restart,stop} t3code`
   # and `journalctl --user -u t3code` instead.
