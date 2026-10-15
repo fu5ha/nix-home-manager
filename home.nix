@@ -184,8 +184,7 @@ in
       RestartSec = 5;
       CPUWeight = 1000;
       IOWeight = 1000;
-      # Restore "avoid" once Winter ships uresourced >= 0.5.5.
-      ManagedOOMPreference = "none";
+      ManagedOOMPreference = "avoid";
     };
     Install.WantedBy = [ "default.target" ];
   };
