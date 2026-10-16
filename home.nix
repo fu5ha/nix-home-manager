@@ -187,6 +187,43 @@ in
     Install.WantedBy = [ "default.target" ];
   };
 
+  # Plasma misses .desktop/icon changes from a switch: ksycoca watches
+  # applications/ dirs via inotify, which resolves ~/.nix-profile to the
+  # store dir's inode at watch time, so retargeting the profile symlink to
+  # a new generation produces no event; the mtime fallback sees only the
+  # store's 1970 timestamps and also concludes nothing changed. Force a
+  # refresh after installing packages. Use the host's kbuildsycoca6 (its
+  # cache format must match the running Plasma), and guard everything so a
+  # switch outside a Plasma session still succeeds.
+  home.activation.plasmaDesktopCache = lib.hm.dag.entryAfter [ "installPackages" ] ''
+    # KDE's on-disk icon cache, rebuilt on next use. Must go before the
+    # iconChanged signal below so KIconLoader repopulates from scratch.
+    rm -f "$HOME/.cache/icon-cache.kcache"
+
+    if [ -x /usr/bin/kbuildsycoca6 ]; then
+      /usr/bin/kbuildsycoca6 --noincremental > /dev/null 2>&1 || true
+      # The sycoca filename is hashed from the environment, and this
+      # shell's XDG_DATA_DIRS can differ from plasmashell's, landing the
+      # rebuild in a file Plasma never reads. Re-run under the user
+      # manager's environment (the one plasmashell was started with) so
+      # its cache file is the one that gets rebuilt.
+      XDG_RUNTIME_DIR=''${XDG_RUNTIME_DIR:-/run/user/$(id -u)} \
+        /usr/bin/systemd-run --user --pipe --wait --quiet \
+        /usr/bin/kbuildsycoca6 --noincremental > /dev/null 2>&1 || true
+    fi
+
+    # Tell running apps to reload icons. This is the signal
+    # KIconLoader::emitChange sends on icon-theme changes; it makes each
+    # app drop its in-memory pixmap cache and re-scan the theme dirs.
+    # Groups: Desktop=0 (launcher/menus), Panel=4 (task manager).
+    if [ -n "''${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
+      for group in 0 4; do
+        /usr/bin/dbus-send --session --type=signal /KIconLoader \
+          org.kde.KIconLoader.iconChanged int32:$group > /dev/null 2>&1 || true
+      done
+    fi
+  '';
+
   home.activation.devenvNushellHook = lib.hm.dag.entryAfter [ "installPackages" ] ''
     mkdir -p "$HOME/.cache/devenv"
     ${pkgs.devenv}/bin/devenv hook nu > "$HOME/.cache/devenv/hook.nu"
