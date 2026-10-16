@@ -28,12 +28,6 @@
       url = "github:numtide/llm-agents.nix";
     };
 
-    # Lock release metadata so `nix flake update` also updates desktop nightlies.
-    t3code-releases = {
-      url = "file+https://api.github.com/repos/pingdotgg/t3code/releases?per_page=100";
-      flake = false;
-    };
-
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -86,18 +80,11 @@
         codex = llm-agent-pkgs.codex;
         muse-code = llm-agent-pkgs.muse-code;
         opencode2 = llm-agent-pkgs.opencode2;
-        t3code-desktop = pkgs.callPackage ./lib/t3code-nightly.nix {
-          releasesFile = inputs.t3code-releases;
-        };
-        # From-source nightly build (fork of numtide/llm-agents.nix t3code).
-        # Build standalone with `nix build .#t3code-src`; bump the
-        # nightly with `scripts/update-t3code.py`.
-        t3code-src = pkgs.callPackage ./lib/t3code/package.nix {
-          t3code-unwrapped = pkgs.callPackage ./lib/t3code/unwrapped.nix {
-            formatelf = pkgs.callPackage ./lib/t3code/formatelf.nix { };
-            versionCheckHomeHook =
-              pkgs.callPackage ./lib/t3code/versionCheckHomeHook/package.nix { };
-          };
+        # llm-agents' t3code, with our providers baked into the wrapper
+        # PATH instead of upstream's defaults (which omit pi and include
+        # cursor-agent/grok/opencode-1.x). Build standalone with
+        # `nix build .#t3code`.
+        t3code = llm-agent-pkgs.t3code.override {
           providerPackages = [
             llm-agent-pkgs.pi
             llm-agent-pkgs.codex
@@ -111,7 +98,7 @@
       };
     in
     {
-      packages.${system}.t3code-src = extra-pkgs.t3code-src;
+      packages.${system}.t3code = extra-pkgs.t3code;
 
       homeConfigurations."gray" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;

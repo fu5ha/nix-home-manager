@@ -35,11 +35,10 @@ let
     # the helpers container; Pi reaches it via MCP over `podman exec`.
     # extra-pkgs.opencode2
     # extra-pkgs.autolith
-    # From-source build (lib/t3code): `t3` CLI from the main output,
-    # desktop app from the `desktop` output. The AppImage package
-    # (extra-pkgs.t3code-desktop) remains as a fallback but is unused.
-    extra-pkgs.t3code-src
-    (withNixGraphics extra-pkgs.t3code-src.desktop)
+    # llm-agents t3code: `t3` CLI from the main output, desktop app
+    # from the `desktop` output.
+    extra-pkgs.t3code
+    (withNixGraphics extra-pkgs.t3code.desktop)
 
     extra-pkgs.helix
 
@@ -147,8 +146,7 @@ in
   # the unit at its `__service-launcher`, i.e. a second copy of t3 that
   # `t3 update` mutates outside Nix. Upstream's launcher ultimately just
   # spawns `<t3> serve`, so run the Nix-packaged one directly; updates
-  # then flow through home-manager switches like everything else (after
-  # bumping the pinned nightly with scripts/update-t3code.py). Do not rely on
+  # then flow through home-manager switches like everything else. Do not rely on
   # `t3 service status` either (it compares against the upstream-pinned
   # unit); manage this with `systemctl --user {status,restart,stop} t3code`
   # and `journalctl --user -u t3code` instead.
@@ -177,7 +175,7 @@ in
       # (mapping removed on shutdown), so paired remote environments keep
       # working when the desktop app is closed. Requires MagicDNS + HTTPS
       # enabled in the tailnet admin console.
-      ExecStart = "${lib.getExe' extra-pkgs.t3code-src "t3"} serve --tailscale-serve";
+      ExecStart = "${lib.getExe' extra-pkgs.t3code "t3"} serve --tailscale-serve";
       KillMode = "mixed";
       OOMPolicy = "continue";
       Restart = "always";
