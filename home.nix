@@ -151,8 +151,8 @@ in
   # unit); manage this with `systemctl --user {status,restart,stop} t3code`
   # and `journalctl --user -u t3code` instead.
   #
-  # Note: starts on login. To also start at boot / survive logout, run
-  # `sudo loginctl enable-linger gray` once (Home Manager cannot do that).
+  # Note: starts on login. To also start at boot / survive logout, linger
+  # must be enabled once (Home Manager cannot do that); see host/apply-host.sh.
   systemd.user.startServices = "sd-switch";
   systemd.user.services.t3code = {
     Unit = {
@@ -227,6 +227,44 @@ in
   home.activation.devenvNushellHook = lib.hm.dag.entryAfter [ "installPackages" ] ''
     mkdir -p "$HOME/.cache/devenv"
     ${pkgs.devenv}/bin/devenv hook nu > "$HOME/.cache/devenv/hook.nu"
+  '';
+
+  # S0 session policy: never suspend (also refused system-wide by the
+  # winter image), turn displays off after 30 minutes and lock as they
+  # go dark, and make the chassis power button lock instead of sleep.
+  # LockOnStart pairs with the plasmalogin autologin drop-in installed
+  # by host/apply-host.sh: the session starts at boot, already locked,
+  # with the (passwordless) wallet open for user services. Written with
+  # the host's kwriteconfig6 into the real ~/.config files, since KDE
+  # both reads and writes these; symlinks into the Nix store would fight it.
+  # PowerDevil action enums: 0 = do nothing, 32 = lock screen.
+  home.activation.powerAndLock = lib.hm.dag.entryAfter [ "installPackages" ] ''
+    if [ -x /usr/bin/kwriteconfig6 ]; then
+      kw=/usr/bin/kwriteconfig6
+      $kw --file powerdevilrc --group AC --group SuspendAndShutdown --key AutoSuspendAction 0
+      $kw --file powerdevilrc --group AC --group SuspendAndShutdown --key PowerButtonAction 32
+      $kw --file powerdevilrc --group AC --group Display --key TurnOffDisplayIdleTimeoutSec 1800
+      $kw --file powerdevilrc --group AC --group Display --key LockBeforeTurnOffDisplay true
+      $kw --file kscreenlockerrc --group Daemon --key LockOnStart true
+      $kw --file kscreenlockerrc --group Daemon --key Timeout 30
+    fi
+  '';
+
+  # Linger and the plasmalogin autologin drop-in live behind sudo, so
+  # Home Manager can only verify them. Warn (never fail the switch)
+  # when host state drifts from what this repo declares; the fix is
+  # host/apply-host.sh.
+  home.activation.hostSetupCheck = lib.hm.dag.entryAfter [ "installPackages" ] ''
+    apply="run host/apply-host.sh from the home-manager repo"
+    if [ "$(loginctl show-user "$USER" -p Linger --value 2>/dev/null)" != "yes" ]; then
+      printf 'warning: linger is disabled for %s; %s\n' "$USER" "$apply" >&2
+    fi
+    if ! cmp -s ${./host/50-autologin.conf} /etc/plasmalogin.conf.d/50-autologin.conf; then
+      printf 'warning: /etc/plasmalogin.conf.d/50-autologin.conf differs from host/50-autologin.conf; %s\n' "$apply" >&2
+    fi
+    if [ -e /etc/plasmalogin.conf.d/99-plasma-setup.conf ]; then
+      printf 'warning: leftover /etc/plasmalogin.conf.d/99-plasma-setup.conf overrides autologin; %s\n' "$apply" >&2
+    fi
   '';
 
   programs.nix-index.enable = true;
