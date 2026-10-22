@@ -31,10 +31,10 @@ let
     extra-pkgs.pi
     extra-pkgs.codex
     extra-pkgs.muse-code
+    extra-pkgs.claude-code
     # agent-browser intentionally not installed on the host: it lives in
     # the helpers container; Pi reaches it via MCP over `podman exec`.
     # extra-pkgs.opencode2
-    # extra-pkgs.autolith
     # llm-agents t3code: `t3` CLI from the main output, desktop app
     # from the `desktop` output.
     extra-pkgs.t3code
@@ -46,8 +46,6 @@ let
   ];
 
   nixPkgs = with pkgs; [
-    (withNixGraphics vscode-fhs)
-
     # basic shell tools
     nushell
     htop

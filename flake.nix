@@ -47,10 +47,6 @@
       url = "github:mattwparas/helix?rev=4d86612df48447088ef4190bf503fd54a7562aa9";
     };
 
-    autolith = {
-      url = "github:lambda-symbolics/autolith";
-    };
-
     # Local checkout of fu5ha/zed so fork changes can land without a push.
     # Advance with `nix flake update zed` after moving the jj-inbox-fork
     # bookmark; no nixpkgs follows, the fork builds against its locked nixpkgs.
@@ -70,6 +66,28 @@
       
       pkgs = import nixpkgs {
         inherit system;
+        overlays = [
+          # TEMPORARY (Oct 2026, eMudhra intermediate CA compromise,
+          # CVE-2026-111943): nixos-unstable still ships cacert 3.126,
+          # which trusts the roots cross-signing the compromised
+          # intermediates. Blacklist the same roots NixOS master drops
+          # in its security.ca defaults. Remove this overlay once the
+          # locked nixpkgs has cacert >= 3.131.1; test with:
+          #   curl --cacert "$(nix build --no-link --print-out-paths .#homeConfigurations.gray.pkgs.cacert)/etc/ssl/certs/ca-bundle.crt" https://dv-g3b-emudhra.we-have-a-problem.com/
+          # (must fail with a certificate error). Note this does not
+          # cover tools that embed their own roots (Node/Electron apps,
+          # some Rust binaries) or non-Nix runtimes (brew/fnm Node, uv).
+          (_final: prev: {
+            cacert = prev.cacert.override {
+              blacklist = [
+                "Comodo AAA Services root"
+                "emSign ECC Root CA - G3"
+                "emSign Root CA - C1"
+                "emSign ECC Root CA - C3"
+              ];
+            };
+          })
+        ];
       };
 
       llm-agent-pkgs = inputs.llm-agents.packages.${system};
@@ -79,7 +97,7 @@
         pi = llm-agent-pkgs.pi;
         codex = llm-agent-pkgs.codex;
         muse-code = llm-agent-pkgs.muse-code;
-        opencode2 = llm-agent-pkgs.opencode2;
+        claude-code = llm-agent-pkgs.claude-code;
         # llm-agents' t3code, with our providers baked into the wrapper
         # PATH instead of upstream's defaults (which omit pi and include
         # cursor-agent/grok/opencode-1.x). Build standalone with
@@ -88,12 +106,12 @@
           providerPackages = [
             llm-agent-pkgs.pi
             llm-agent-pkgs.codex
+            llm-agent-pkgs.claude-code
           ];
         };
         # colgrep = next-plaid-pkgs.colgrep;
         # patchmark = inputs.patchmark.packages.${system}.default;
         helix = inputs.helix.packages.${system}.default;
-        autolith = inputs.autolith.packages.${system}.default;
         zed = inputs.zed.packages.${system}.default;
       };
     in
