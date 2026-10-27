@@ -66,28 +66,6 @@
       
       pkgs = import nixpkgs {
         inherit system;
-        overlays = [
-          # TEMPORARY (Oct 2026, eMudhra intermediate CA compromise,
-          # CVE-2026-111943): nixos-unstable still ships cacert 3.126,
-          # which trusts the roots cross-signing the compromised
-          # intermediates. Blacklist the same roots NixOS master drops
-          # in its security.ca defaults. Remove this overlay once the
-          # locked nixpkgs has cacert >= 3.131.1; test with:
-          #   curl --cacert "$(nix build --no-link --print-out-paths .#homeConfigurations.gray.pkgs.cacert)/etc/ssl/certs/ca-bundle.crt" https://dv-g3b-emudhra.we-have-a-problem.com/
-          # (must fail with a certificate error). Note this does not
-          # cover tools that embed their own roots (Node/Electron apps,
-          # some Rust binaries) or non-Nix runtimes (brew/fnm Node, uv).
-          (_final: prev: {
-            cacert = prev.cacert.override {
-              blacklist = [
-                "Comodo AAA Services root"
-                "emSign ECC Root CA - G3"
-                "emSign Root CA - C1"
-                "emSign ECC Root CA - C3"
-              ];
-            };
-          })
-        ];
       };
 
       llm-agent-pkgs = inputs.llm-agents.packages.${system};
