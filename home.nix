@@ -26,6 +26,42 @@ let
         libsOnly = true;
       };
 
+  vbdo = pkgs.writeShellScriptBin "vbdo" ''
+    cmd=$(readlink -f "$(command -v -- "$1")")
+    shift
+    exec sudo -u vaultbroker -- "$cmd" "$@"
+  '';
+
+  sopsAgeKey = pkgs.writeShellApplication {
+    name = "sops-age-key";
+    runtimeInputs = [
+      pkgs.bitwarden-cli
+      pkgs.jq
+    ];
+    text = ''
+      export HOME=/var/lib/vaultbroker
+      export BITWARDENCLI_APPDATA_DIR=/var/lib/vaultbroker/bw-sops
+      cd /
+
+      if [ "''${1:-}" = login ]; then
+        bw config server "$(jq -r .vaultwarden_url /etc/vaultbroker/config.json)"
+        exec bw login
+      fi
+
+      printf 'Bitwarden master password: ' >/dev/tty
+      read -rs BW_PASSWORD </dev/tty
+      printf '\n' >/dev/tty
+      export BW_PASSWORD
+      BW_SESSION=$(bw unlock --raw --passwordenv BW_PASSWORD)
+      unset BW_PASSWORD
+      export BW_SESSION
+      trap 'bw lock >/dev/null' EXIT
+
+      bw sync >/dev/null
+      bw get notes 3d64bbcc-c89f-482d-a5ed-e7559d16c06a
+    '';
+  };
+
   extraPkgs = [
     # extra-pkgs.colgrep
     extra-pkgs.pi
@@ -43,6 +79,9 @@ let
     extra-pkgs.helix
 
     zed
+
+    vbdo
+    sopsAgeKey
   ];
 
   nixPkgs = with pkgs; [
@@ -113,20 +152,22 @@ in
       # GTK/WebKitGTK EGL acceleration needs them.
       #
       # See also the sessionVariables related to selecting the correct icds
-      drivers = lib.mkForce (pkgs.buildEnv {
-        name = "non-nixos-gpu";
-        paths = [
-          pkgs.mesa
-          pkgs.libvdpau-va-gl
-          pkgs.intel-media-driver
-          nvidiaDriver
-          pkgs.nvidia-vaapi-driver
-          pkgs.egl-wayland
-          pkgs.egl-gbm
-          pkgs.egl-wayland2
-          pkgs.egl-x11
-        ];
-      });
+      drivers = lib.mkForce (
+        pkgs.buildEnv {
+          name = "non-nixos-gpu";
+          paths = [
+            pkgs.mesa
+            pkgs.libvdpau-va-gl
+            pkgs.intel-media-driver
+            nvidiaDriver
+            pkgs.nvidia-vaapi-driver
+            pkgs.egl-wayland
+            pkgs.egl-gbm
+            pkgs.egl-wayland2
+            pkgs.egl-x11
+          ];
+        }
+      );
       nvidia = {
         enable = true;
         sha256 = nvidiaSha256;
@@ -363,7 +404,7 @@ in
     enable = true;
 
     package = extra-pkgs.helix;
-    
+
     # languages = {
     #   language-server.patchmark = {
     #     command = lib.getExe' extra-pkgs.patchmark "patchmark";
