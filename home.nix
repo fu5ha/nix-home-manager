@@ -26,12 +26,6 @@ let
         libsOnly = true;
       };
 
-  vbdo = pkgs.writeShellScriptBin "vbdo" ''
-    cmd=$(readlink -f "$(command -v -- "$1")")
-    shift
-    exec sudo -u vaultbroker -- "$cmd" "$@"
-  '';
-
   sopsAgeKey = pkgs.writeShellApplication {
     name = "sops-age-key";
     runtimeInputs = [
@@ -80,7 +74,6 @@ let
 
     zed
 
-    vbdo
     sopsAgeKey
   ];
 
