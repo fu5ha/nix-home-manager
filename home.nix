@@ -219,6 +219,28 @@ in
     Install.WantedBy = [ "default.target" ];
   };
 
+  systemd.user.services.vale-tunnel = {
+    Unit.Description = "SSH tunnel to vale agent sockets";
+    Service = {
+      Type = "simple";
+      ExecStart = lib.concatStringsSep " " [
+        (lib.getExe pkgs.openssh)
+        "-N"
+        "-i %h/.ssh/id_ed25519"
+        "-o BatchMode=yes"
+        "-o ExitOnForwardFailure=yes"
+        "-o ServerAliveInterval=30"
+        "-o StreamLocalBindUnlink=yes"
+        "-L %t/browser-agent.sock:/run/browser-control/agent.sock"
+        "-L %t/vaultbroker.sock:/run/vaultbroker/broker.sock"
+        "deja@vale.local"
+      ];
+      Restart = "always";
+      RestartSec = 5;
+    };
+    Install.WantedBy = [ "default.target" ];
+  };
+
   # Plasma misses .desktop/icon changes from a switch: ksycoca watches
   # applications/ dirs via inotify, which resolves ~/.nix-profile to the
   # store dir's inode at watch time, so retargeting the profile symlink to

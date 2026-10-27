@@ -518,11 +518,11 @@
     },
     "nixpkgs_7": {
       "locked": {
-        "lastModified": 1769789167,
-        "narHash": "sha256-kKB3bqYJU5nzYeIROI82Ef9VtTbu4uA3YydSk/Bioa8=",
+        "lastModified": 1791048980,
+        "narHash": "sha256-KgItSKML8Xvte0B7/uGnBDsYzSnnKHcOaiUbgWBXLXw=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "62c8382960464ceb98ea593cb8321a2cf8f9e3e5",
+        "rev": "a7868a727837f3c09cee2ce0ca671c76b1589fed",
         "type": "github"
       },
       "original": {
@@ -760,11 +760,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1791873965,
-        "narHash": "sha256-0doEcdpf8qqXRbVNGwieCB3+m/WkPAFwZ94uVkk+C94=",
+        "lastModified": 1793124589,
+        "narHash": "sha256-i4hmtBtywXdI1WgRmj1tvNa9f9S7AirmjUidGN8dtQg=",
         "ref": "jj-inbox-fork",
-        "rev": "a6972658772403303d22d5787379256fa487fed2",
-        "revCount": 40277,
+        "rev": "c445bc3b29b7b5f253cde8ba00802b7f2764c243",
+        "revCount": 40632,
         "type": "git",
         "url": "file:///home/gray/git/zed"
       },
